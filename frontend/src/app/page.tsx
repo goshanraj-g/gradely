@@ -1,4 +1,5 @@
 // app/page.tsx
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,6 +8,13 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function Home() {
   return (
@@ -21,10 +29,12 @@ export default function Home() {
         <p className="text-muted-foreground mb-6">
           Track your grades, simulate scenarios, and plan your academic success.
         </p>
-        <Button className="mb-4">Get Started</Button>
+        <Link href="/sign-in">
+          <Button className="mb-4">Get Started</Button>
+        </Link>
       </div>
       {/* Bottom card */}
-      <div className="flex-1 flex items-end px-4 max-w-xl mx-auto w-full mb-4">
+      <div className="flex-1 flex items-end px-4 max-w-xl mx-auto w-full mb-6 text-center">
         <Card className="w-full">
           <CardHeader>
             <CardTitle>What is TermCalc?</CardTitle>
@@ -33,8 +43,7 @@ export default function Home() {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
-            Input assessments, simulate final grades, and export reports — all
-            in one clean dashboard.
+            Input assessments, simulate final grades, all in one clean dashboard
           </CardContent>
         </Card>
       </div>
