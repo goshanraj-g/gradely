@@ -2,14 +2,16 @@
 import "./globals.css";
 import NavBar from "@/components/NavBar";
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body className="flex flex-col h-screen">
         <NavBar />
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto">{children}</main>
       </body>
     </html>
   );
