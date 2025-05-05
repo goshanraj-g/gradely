@@ -9,7 +9,7 @@ export default function SignInPage() {
       <form className="w-full max-w-sm space-y-4">
         <Input type="email" placeholder="Email" />
         <Input type="password" placeholder="Password" />
-        <Button className="w-full">Continue</Button>
+        <Button className="w-full cursor-pointer">Continue</Button>
       </form>
     </main>
   )
