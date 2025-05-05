@@ -62,7 +62,7 @@ export default function QuickStartModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="mb-4 cursor-pointer">Quickstart</Button>
+        <Button className="mb-4 cursor-pointer">Do a Quick Calculation</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -89,7 +89,7 @@ export default function QuickStartModal() {
               />
               <Button
                 variant="destructive"
-                className="col-span-3"
+                className="col-span-3 cursor-pointer"
                 onClick={() => removeRow(i)}
               >
                 Remove
@@ -97,11 +97,11 @@ export default function QuickStartModal() {
             </div>
           ))}
 
-          <Button variant="outline" onClick={addRow}>
+          <Button variant="outline" onClick={addRow} className="w-full cursor-pointer">
             + Add Assessment
           </Button>
 
-          <Button onClick={calculateWeightedGrade} className="w-full">
+          <Button onClick={calculateWeightedGrade} className="w-full cursor-pointer">
             Calculate Weighted Grade
           </Button>
 
