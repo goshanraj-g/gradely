@@ -3,7 +3,7 @@ import schemas
 import os
 
 from fastapi import APIRouter, HTTPException, Depends, status
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
@@ -18,6 +18,9 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+
 router = APIRouter() #modular router
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") #hashes with salt
@@ -31,6 +34,13 @@ def get_db():
         
 def hash_password(password:str):
     return pwd_context.hash(password)
+
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could now validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
 
 def create_access_token(data: dict, expires_delta: timedelta):
     to_encode = data.copy()
