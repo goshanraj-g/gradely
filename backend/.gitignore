@@ -1,0 +1,31 @@
+# === GLOBAL ===
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.env
+*.env
+*.sqlite3
+*.log
+
+# === BACKEND ===
+venv/
+backend/.env
+.mypy_cache/
+.pytest_cache/
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+
+# === Logs ===
+*.log
+
+# === Misc ===
+*.swp
+*.swo
+*.bak
+
+# === IDEs ===
+.vscode/
+.idea/
