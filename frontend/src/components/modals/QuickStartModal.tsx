@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -8,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -69,7 +69,7 @@ export default function QuickStartModal() {
           <DialogTitle>Quick Grade Calculator</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
           {assessments.map((a, i) => (
             <div key={i} className="grid grid-cols-3 gap-2 items-center">
               <Input
@@ -97,11 +97,18 @@ export default function QuickStartModal() {
             </div>
           ))}
 
-          <Button variant="outline" onClick={addRow} className="w-full cursor-pointer">
+          <Button
+            variant="outline"
+            onClick={addRow}
+            className="w-full cursor-pointer"
+          >
             + Add Assessment
           </Button>
 
-          <Button onClick={calculateWeightedGrade} className="w-full cursor-pointer">
+          <Button
+            onClick={calculateWeightedGrade}
+            className="w-full cursor-pointer"
+          >
             Calculate Weighted Grade
           </Button>
 

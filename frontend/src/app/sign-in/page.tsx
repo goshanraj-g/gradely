@@ -1,16 +1,57 @@
-// app/sign-in/page.tsx
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+"use client"; // all components run on browser
+
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 export default function SignInPage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-6">
-      <h1 className="text-3xl font-bold mb-4">Sign In</h1>
-      <form className="w-full max-w-sm space-y-4">
-        <Input type="email" placeholder="Email" />
-        <Input type="password" placeholder="Password" />
-        <Button className="w-full cursor-pointer">Continue</Button>
-      </form>
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl text-center">Sign In</CardTitle>
+          <CardDescription className="text-center">
+            Access your TermCalc dashboard
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form className="space-y-4">
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              placeholder="Email"
+              required
+            />
+            <Input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+            <Button type="submit" className="w-full">
+              Continue
+            </Button>
+          </form>
+          <p className="mt-4 text-sm text-center">
+            Don't have an account?{" "}
+            <Link
+              href="/sign-up"
+              className="text-gray-700 hover:underline font-bold"
+            >
+              Sign up here
+            </Link>
+          </p>
+        </CardContent>
+      </Card>
     </main>
-  )
+  );
 }

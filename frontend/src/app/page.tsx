@@ -1,7 +1,5 @@
 "use client";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import QuickStartModal from "@/components/QuickStartModal";
+import QuickStartModal from "@/components/modals/QuickStartModal";
 import {
   Card,
   CardContent,
