@@ -22,8 +22,7 @@ export default function CoursesPage() {
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState<Course | null>(null);
   const [toDelete, setToDelete] = useState<Course | null>(null);
-
-  /* load courses on mount */
+ 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
