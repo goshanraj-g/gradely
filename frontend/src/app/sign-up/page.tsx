@@ -21,16 +21,37 @@ export default function SignUpPage() {
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TO DO: SEND EMAIL + PASSWORD TO FASTAPI
-    console.log({ email, password });
+
+    try {
+      const res = await fetch("http://localhost:8000/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.detail || "Signup failed"); // get rid of alert later
+        return;
+      }
+
+      const data = await res.json();
+      console.log("DONE", data);
+      window.location.href = "/sign-in";
+    } catch (error) {
+      alert("ERROR CONNECTING TO SERVER");
+      console.error(error);
+    }
   };
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignUp = () => {
     window.location.href = "temp"; // sets browers url
   };
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen p-6">
+    <main className="flex flex-col items-center justify-center min-h-screen p-6 pt-20">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl text-center">Create Account</CardTitle>
@@ -87,7 +108,7 @@ export default function SignUpPage() {
           <Button
             variant="outline"
             className="w-full cursor-pointer"
-            onClick={handleGoogleSignIn}
+            onClick={handleGoogleSignUp}
           >
             Sign In with Google
           </Button>

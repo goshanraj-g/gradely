@@ -1,78 +1,117 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-type Props = {
-  onCourseAdded?: () => void;
-};
+type Props = { onCourseAdded: () => void };
 
 export default function AddCourseModal({ onCourseAdded }: Props) {
+  const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  //   const handleAddCourse = async () => {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) return;
+  const nameRef = useRef<HTMLInputElement>(null);
 
-  //     try {
-  //       const res = await fetch("http://localhost:8000/courses", {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         body: JSON.stringify({ name, code }),
-  //       });
+  // autofocus when opened
+  useEffect(() => {
+    if (open) {
+      setError("");
+      setTimeout(() => nameRef.current?.focus(), 50);
+    }
+  }, [open]);
 
-  //       if (!res.ok) throw new Error("Failed to add course");
+  const handleSubmit = async () => {
+    if (!name.trim() || !code.trim()) return;
+    setLoading(true);
+    setError("");
 
-  //       setOpen(false);
-  //       setName("");
-  //       setCode("");
+    const token = localStorage.getItem("token") || "";
+    if (!token) {
+      setError("You must be logged in.");
+      setLoading(false);
+      return;
+    }
 
-  //       if (onCourseAdded) onCourseAdded();
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   };
+    try {
+      const res = await fetch("http://localhost:8000/courses", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          code: code.trim().toUpperCase(),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.detail ?? "Failed to create course.");
+      }
+
+      setOpen(false);
+      setName("");
+      setCode("");
+      onCourseAdded();
+    } catch (err: any) {
+      setError(err.message ?? "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKey = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>+ New Course</Button>
+        <Button variant="outline">+ New Course</Button>
       </DialogTrigger>
-      <DialogContent>
+
+      <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Add New Course</DialogTitle>
+          <DialogTitle>Add a course</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
           <Input
-            placeholder="Course Name (e.g. Linear Algebra)"
+            ref={nameRef}
+            placeholder="Course name"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onKeyDown={handleKey}
           />
           <Input
-            placeholder="Course Code (e.g. MATH 1B03)"
+            placeholder="Course code"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            onKeyDown={handleKey}
           />
+
+          {error && <p className="text-destructive text-sm">{error}</p>}
+
           <Button
-            className="w-full"
-            // onClick={handleAddCourse}
-            disabled={!name || !code}
+            onClick={handleSubmit}
+            disabled={loading || !name.trim() || !code.trim()}
+            className="w-full bg-indigo-600 hover:bg-indigo-700"
           >
-            Add Course
+            {loading ? "Adding…" : "Add course"}
           </Button>
         </div>
       </DialogContent>
