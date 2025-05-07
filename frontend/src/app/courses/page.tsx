@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import AddCourseModal from "@/components/modals/AddCourseModal";
 import AssessmentsModal from "@/components/modals/AssessmentModal";
@@ -17,20 +18,25 @@ import { Trash2 } from "lucide-react";
 type Course = { id: number; name: string; code: string };
 
 export default function CoursesPage() {
+  const { status } = useSession();
   const router = useRouter();
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState<Course | null>(null);
   const [toDelete, setToDelete] = useState<Course | null>(null);
- 
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
+    const jwt = localStorage.getItem("token");
+
+    if (status === "unauthenticated" && !jwt) {
       router.push("/sign-in");
       return;
     }
-    fetchCourses(token);
-  }, []);
+
+    if ((status === "authenticated" || jwt) && jwt) {
+      fetchCourses(jwt);
+    }
+  }, [status]);
 
   const fetchCourses = async (token: string) => {
     setLoading(true);
@@ -47,7 +53,6 @@ export default function CoursesPage() {
     }
   };
 
-  /* delete handler */
   const confirmDelete = async () => {
     if (!toDelete) return;
     const token = localStorage.getItem("token") || "";
@@ -67,11 +72,18 @@ export default function CoursesPage() {
     fetchCourses(token);
   };
 
+  if (status === "loading" || loading) {
+    return (
+      <main className="p-6 min-h-screen flex items-center justify-center">
+        Loading…
+      </main>
+    );
+  }
+
   return (
     <main className="p-6 min-h-screen bg-gray-50">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Your Courses</h1>
-
         <AddCourseModal
           onCourseAdded={() =>
             fetchCourses(localStorage.getItem("token") || "")
@@ -79,11 +91,9 @@ export default function CoursesPage() {
         />
       </div>
 
-      {loading ? (
-        <p>Loading…</p>
-      ) : courses.length === 0 ? (
+      {courses.length === 0 ? (
         <p className="text-muted-foreground text-center">
-          No courses yet. Add one above
+          No courses yet. Add one above.
         </p>
       ) : (
         <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
@@ -93,15 +103,12 @@ export default function CoursesPage() {
               onClick={() => setActive(c)}
               className="relative group cursor-pointer"
             >
-              {/* trash icon */}
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // don’t open modal
+                  e.stopPropagation();
                   setToDelete(c);
                 }}
-                className="absolute top-2 right-2 p-1 rounded-full
-                           opacity-0 group-hover:opacity-100 transition
-                           text-muted-foreground hover:text-destructive"
+                className="absolute top-2 right-2 p-1 rounded-full opacity-0 group-hover:opacity-100 transition text-muted-foreground hover:text-destructive"
                 aria-label="Delete course"
               >
                 <Trash2 size={16} />
@@ -120,7 +127,6 @@ export default function CoursesPage() {
         </div>
       )}
 
-      {/* modal for assessments */}
       {active && (
         <AssessmentsModal course={active} onClose={() => setActive(null)} />
       )}
@@ -135,7 +141,6 @@ export default function CoursesPage() {
             <span className="font-medium">{toDelete?.name}</span> and all its
             assessments. This action cannot be undone.
           </p>
-
           <div className="flex gap-3">
             <Button
               variant="outline"
