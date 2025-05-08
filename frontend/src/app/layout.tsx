@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "TermCalc",
+  title: "Gradely",
   icons: {
     icon: "/favicon.png",
   },

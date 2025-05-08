@@ -56,7 +56,7 @@ export default function SignUpPage() {
         <CardHeader>
           <CardTitle className="text-2xl text-center">Create Account</CardTitle>
           <CardDescription className="text-center">
-            Start tracking your grades with TermCalc
+            Start tracking your grades with Gradely
           </CardDescription>
         </CardHeader>
         <CardContent>

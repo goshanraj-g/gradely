@@ -25,7 +25,7 @@ export default function NavBar() {
     <header className="w-full border-b sticky top-0 bg-white z-50">
       <nav className="flex items-center justify-between p-4">
         <Link href="/">
-          <button className="text-xl font-bold cursor-pointer">TermCalc</button>
+          <button className="text-xl font-bold cursor-pointer">Gradely</button>
         </Link>
 
         <ul className="hidden md:flex gap-6 text-sm text-muted-foreground"></ul>

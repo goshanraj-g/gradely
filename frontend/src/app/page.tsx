@@ -24,7 +24,7 @@ export default function Home() {
       <div className="flex-1" />
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 max-w-xl mx-auto text-center">
-        <h1 className="text-4xl font-bold mb-4">TermCalc</h1>
+        <h1 className="text-4xl font-bold mb-4">Gradely</h1>
         <p className="text-muted-foreground mb-6">
           Track your grades, simulate scenarios, and plan your academic success.
         </p>
@@ -54,7 +54,7 @@ export default function Home() {
       <div className="flex-1 flex items-end px-4 max-w-xl mx-auto w-full mb-6 text-center">
         <Card className="w-full">
           <CardHeader>
-            <CardTitle>What is TermCalc?</CardTitle>
+            <CardTitle>What is Gradely?</CardTitle>
             <CardDescription>
               A smarter way to stay on top of your courses
             </CardDescription>

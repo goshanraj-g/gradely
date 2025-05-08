@@ -53,7 +53,7 @@ export default function SignInPage() {
         <CardHeader>
           <CardTitle className="text-2xl text-center">Sign In</CardTitle>
           <CardDescription className="text-center">
-            Access your TermCalc dashboard
+            Access your Gradely dashboard
           </CardDescription>
         </CardHeader>
         <CardContent>
