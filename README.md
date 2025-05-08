@@ -7,12 +7,12 @@
 [![Tailwind CSS](https://img.shields.io/badge/Styling-TailwindCSS-38B2AC.svg)](https://tailwindcss.com/)
 
 <p align="center">
-  <img src="assets/logo.png" alt="Gradely Logo" width="120"/>
+  <img src="frontend/public/logo.png" alt="Gradely Logo" width="120"/>
 </p>
 
 ---
 
-## 👋 About the Project
+## About the Project
 
 **Gradely** is a full-stack web application that replaces spreadsheets with an interactive, student-friendly dashboard for tracking grades, forecasting final outcomes, and testing academic scenarios.
 
@@ -20,19 +20,17 @@ Built by a student, for students, it's a smarter way to stay in control of your 
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### ✅ Core Features (MVP)
+### Core Features (MVP)
 - 📘 **Course Creation**: Add multiple courses with term info
 - 📝 **Assessment Input**: Log assignments, quizzes, exams, and labs with custom weights
 - 📊 **Live Grade Breakdown**: Dynamic grade calculation based on completed work
 - 🎯 **Goal Simulation**: Set a target grade and get insight into what you need to reach it
 - 🔮 **Scenario Testing**: Simulate what-if grades for individual assessments
 
-### 🚀 Stretch Goals
-- 📥 **Export** course summaries as PDF or CSV
+### Stretch Goals
 - 📆 **Calendar Integration** for assignment due dates
-- 📈 **GPA Calculator** for term or cumulative tracking
 - ☁️ **Cloud Hosting** via AWS (S3, Lambda, RDS, etc.)
 - 🧠 **Syllabus OCR Parser** using AWS Textract to auto-fill assessments
 
@@ -61,6 +59,24 @@ Built by a student, for students, it's a smarter way to stay in control of your 
 Let’s say you’ve completed 70% of your course with an average of 85%, and you're aiming for a 90% final grade.
 Gradely shows you exactly what mark you need on your remaining evaluations to reach your goal,
 no spreadsheets, no guesswork, just clean visuals and accurate math.
+
+---
+
+## 🏠 Home Screen Preview
+
+<p align="center">
+  <img src="frontend/public/homescreen.png" alt="Home Screen Preview" width="600"/>
+</p>
+
+---
+
+## 🧮 Calculator Demo
+
+<p align="center">
+  <img src="frontend/public/calculator-demo.png" alt="Calculator Demo" width="600"/>
+</p>
+
+---
 
 ## 🚀 How to Run (Dev)
 
