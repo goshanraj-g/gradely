@@ -22,7 +22,6 @@ class CourseCreate(BaseModel):
     name: str
     code: str
 
-
 class AssignmentCreate(BaseModel):
     name: str
     mark: float
@@ -33,6 +32,9 @@ class AssignmentOut(AssignmentCreate):
     id: int
 
     model_config = {"from_attributes": True}
+    
+class ScenarioOut(BaseModel):
+    needed_mark: float
 
 
 # these are all validation to define ths trcture of the responses

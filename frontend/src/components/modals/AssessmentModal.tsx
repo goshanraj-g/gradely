@@ -5,30 +5,54 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
 import { Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
+/* ------------------------------------------------------------------ */
+/*  type helpers                                                      */
+/* ------------------------------------------------------------------ */
 type Course = { id: number; name: string; code: string };
 type RowEditable = "name" | "mark" | "weight";
 type Row = { id?: number; name: string; mark: string; weight: string };
 
 type Props = {
-  course: Course; // passed from courses
-  onClose: () => void; // inform parent to clear "active" state
+  course: Course;
+  onClose: () => void;
 };
 
+/* ------------------------------------------------------------------ */
+/*  component                                                         */
+/* ------------------------------------------------------------------ */
 export default function AssessmentsModal({ course, onClose }: Props) {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : "";
 
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // weighted-grade
   const [result, setResult] = useState<number | null>(null);
 
+  // scenario calculator
+  const [scenarioAssignmentId, setScenarioAssignmentId] = useState<number | "">(
+    ""
+  );
+  const [scenarioTarget, setScenarioTarget] = useState("");
+  const [scenarioResult, setScenarioResult] = useState<number | null>(null);
+
+  /* ------------------------- fetch assignments -------------------- */
   useEffect(() => {
     if (!course) return;
     fetch(`http://localhost:8000/courses/${course.id}/assignments`, {
@@ -48,39 +72,41 @@ export default function AssessmentsModal({ course, onClose }: Props) {
       .finally(() => setLoading(false));
   }, [course.id]);
 
-  const addRow = async () => {
-    const blank: Row = { name: "", mark: "", weight: "" };
-    setRows((r) => [...r, blank]);
-  };
+  /* -------------------------- helpers ----------------------------- */
+  const update = (idx: number, field: RowEditable, val: string) =>
+    setRows((r) => {
+      const copy = [...r];
+      copy[idx] = { ...copy[idx], [field]: val };
+      return copy;
+    });
+
+  const addRow = () =>
+    setRows((r) => [...r, { name: "", mark: "", weight: "" }]);
 
   const saveRow = async (idx: number, row: Row) => {
-    // simple validation
-    if (!row.name || !row.mark || !row.weight) return;
+    if (!row.name || !row.mark || !row.weight || row.id) return;
 
-    // post req only if its a new row
-    if (!row.id) {
-      const res = await fetch(
-        `http://localhost:8000/courses/${course.id}/assignments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name: row.name,
-            mark: parseFloat(row.mark),
-            weight: parseFloat(row.weight),
-          }),
-        }
-      );
-      const data = await res.json();
-      setRows((r) => {
-        const copy = [...r];
-        copy[idx] = { ...row, id: data.id }; // store returned id
-        return copy;
-      });
-    }
+    const res = await fetch(
+      `http://localhost:8000/courses/${course.id}/assignments`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: row.name,
+          mark: parseFloat(row.mark),
+          weight: parseFloat(row.weight),
+        }),
+      }
+    );
+    const data = await res.json();
+    setRows((r) => {
+      const copy = [...r];
+      copy[idx] = { ...row, id: data.id };
+      return copy;
+    });
   };
 
   const deleteRow = async (idx: number) => {
@@ -102,22 +128,35 @@ export default function AssessmentsModal({ course, onClose }: Props) {
     let sumW = 0;
     rows.forEach((r) => {
       const m = parseFloat(r.mark);
-      let w = parseFloat(r.weight);
-      if (isNaN(m) || isNaN(w)) return;
-      if (w > 1) w /= 100; // accept “25” as 0.25
-      total += m * w;
-      sumW += w;
+      const w = parseFloat(r.weight);
+      if (!isNaN(m) && !isNaN(w)) {
+        total += m * w;
+        sumW += w;
+      }
     });
     setResult(sumW ? total / sumW : null);
   };
 
-  const update = (idx: number, field: RowEditable, val: string) =>
-    setRows((r) => {
-      const copy = [...r];
-      copy[idx] = { ...copy[idx], [field]: val }; // keep row shape
-      return copy;
-    });
+  const calculateScenario = async () => {
+    if (!scenarioAssignmentId || !scenarioTarget) return;
+    const t = parseFloat(scenarioTarget);
+    if (isNaN(t)) return alert("Enter a valid target %");
 
+    const res = await fetch(
+      `http://localhost:8000/courses/${course.id}/assignments/${scenarioAssignmentId}/scenario?target=${t}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (!res.ok) {
+      const err = await res.text();
+      return alert("Error: " + err);
+    }
+    const data = await res.json();
+    setScenarioResult(data.needed_mark);
+  };
+
+  /* ------------------------------------------------------------------ */
+  /*  render                                                            */
+  /* ------------------------------------------------------------------ */
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
@@ -132,6 +171,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
           <p className="text-center py-6">Loading…</p>
         ) : (
           <>
+            {/* table header */}
             <div className="grid grid-cols-[1fr_90px_90px_32px] gap-2 px-1 py-2 text-xs font-medium text-muted-foreground border-b">
               <span>Name</span>
               <span className="text-center">Mark %</span>
@@ -139,6 +179,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
               <span />
             </div>
 
+            {/* rows */}
             <div className="max-h-[55vh] overflow-y-auto space-y-2 py-2 pr-1">
               {rows.map((row, i) => (
                 <div
@@ -176,6 +217,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
               ))}
             </div>
 
+            {/* actions */}
             <div className="mt-4 space-y-2">
               <Button variant="outline" onClick={addRow} className="w-full">
                 + Add Assessment
@@ -199,6 +241,84 @@ export default function AssessmentsModal({ course, onClose }: Props) {
                   </span>
                 </p>
               )}
+
+              {/* ---------------------------------------------------------- */}
+              {/*  scenario calculator                                       */}
+              {/* ---------------------------------------------------------- */}
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="text-lg">What do I need?</CardTitle>
+                </CardHeader>
+
+                <CardContent className="grid gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
+                    {/* assignment selector */}
+                    <div className="grid gap-2">
+                      <Label htmlFor="assignment">Assignment</Label>
+                      <Select
+                        value={scenarioAssignmentId?.toString() ?? ""}
+                        onValueChange={(val) =>
+                          setScenarioAssignmentId(
+                            val === "" ? "" : parseInt(val)
+                          )
+                        }
+                      >
+                        <SelectTrigger id="assignment">
+                          <SelectValue placeholder="Select assignment…" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {rows
+                            .filter((r) => r.id)
+                            .map((r) => (
+                              <SelectItem key={r.id} value={r.id!.toString()}>
+                                {r.name}
+                              </SelectItem>
+                            ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* target input */}
+                    <div className="grid gap-2">
+                      <Label htmlFor="target">Target %</Label>
+                      <Input
+                        id="target"
+                        type="number"
+                        min={0}
+                        max={100}
+                        step={0.1}
+                        placeholder="e.g. 90"
+                        value={scenarioTarget}
+                        onChange={(e) => setScenarioTarget(e.target.value)}
+                      />
+                    </div>
+
+                    {/* action button */}
+                    <Button
+                      className="w-full md:w-auto md:mt-6"
+                      onClick={calculateScenario}
+                    >
+                      Calculate
+                    </Button>
+                  </div>
+
+                  {scenarioResult !== null && (
+                    <p className="text-center text-sm md:text-base">
+                      To finish the course at{" "}
+                      <span className="font-semibold">{scenarioTarget}%</span>,
+                      you need{" "}
+                      <span className="font-semibold">
+                        {scenarioResult.toFixed(2)}%
+                      </span>{" "}
+                      on{" "}
+                      <span className="font-semibold">
+                        {rows.find((r) => r.id === scenarioAssignmentId)?.name}
+                      </span>
+                      .
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           </>
         )}
