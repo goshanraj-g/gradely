@@ -113,6 +113,30 @@ export default function AssessmentsModal({ course, onClose }: Props) {
     setRows((r) => r.filter((_, i) => i !== idx));
   };
 
+  const updateRow = async (idx: number, row: Row) => {
+    if (!row.id) return;
+
+    const res = await fetch(
+      `http://localhost:8000/courses/${course.id}/assignments/${row.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: row.name,
+          mark: parseFloat(row.mark),
+          weight: parseFloat(row.weight),
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      console.error("Update failed", await res.text());
+    }
+  };
+
   const calc = () => {
     let total = 0;
     let sumW = 0;
@@ -175,21 +199,27 @@ export default function AssessmentsModal({ course, onClose }: Props) {
                     value={row.name}
                     placeholder="Assignment"
                     onChange={(e) => update(i, "name", e.target.value)}
-                    onBlur={() => saveRow(i, row)}
+                    onBlur={() =>
+                      row.id ? updateRow(i, row) : saveRow(i, row)
+                    }
                   />
                   <Input
                     value={row.mark}
                     placeholder="78"
                     className="text-center"
                     onChange={(e) => update(i, "mark", e.target.value)}
-                    onBlur={() => saveRow(i, row)}
+                    onBlur={() =>
+                      row.id ? updateRow(i, row) : saveRow(i, row)
+                    }
                   />
                   <Input
                     value={row.weight}
                     placeholder="0.25"
                     className="text-center"
                     onChange={(e) => update(i, "weight", e.target.value)}
-                    onBlur={() => saveRow(i, row)}
+                    onBlur={() =>
+                      row.id ? updateRow(i, row) : saveRow(i, row)
+                    }
                   />
                   <button
                     onClick={() => deleteRow(i)}
@@ -272,7 +302,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
                       />
                     </div>
                     <Button
-                      className="w-full md:w-auto md:mt-6"
+                      className="w-full md:w-auto md:mt-6 cursor-pointer"
                       onClick={calculateScenario}
                     >
                       Calculate

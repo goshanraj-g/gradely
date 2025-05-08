@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class UserCreate(BaseModel):
@@ -31,6 +32,11 @@ class AssignmentOut(AssignmentCreate):
     id: int
     model_config = {"from_attributes": True}
 
+
+class AssignmentUpdate(BaseModel):
+    name: Optional[str]
+    weight: Optional[float]
+    mark: Optional[float]
 
 class ScenarioOut(BaseModel):
     needed_mark: float
