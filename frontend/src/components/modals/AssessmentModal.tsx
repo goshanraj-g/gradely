@@ -20,9 +20,6 @@ import {
 import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-/* ------------------------------------------------------------------ */
-/*  type helpers                                                      */
-/* ------------------------------------------------------------------ */
 type Course = { id: number; name: string; code: string };
 type RowEditable = "name" | "mark" | "weight";
 type Row = { id?: number; name: string; mark: string; weight: string };
@@ -32,9 +29,6 @@ type Props = {
   onClose: () => void;
 };
 
-/* ------------------------------------------------------------------ */
-/*  component                                                         */
-/* ------------------------------------------------------------------ */
 export default function AssessmentsModal({ course, onClose }: Props) {
   const token =
     typeof window !== "undefined" ? localStorage.getItem("token") : "";
@@ -42,17 +36,14 @@ export default function AssessmentsModal({ course, onClose }: Props) {
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // weighted-grade
   const [result, setResult] = useState<number | null>(null);
 
-  // scenario calculator
   const [scenarioAssignmentId, setScenarioAssignmentId] = useState<number | "">(
     ""
   );
   const [scenarioTarget, setScenarioTarget] = useState("");
   const [scenarioResult, setScenarioResult] = useState<number | null>(null);
 
-  /* ------------------------- fetch assignments -------------------- */
   useEffect(() => {
     if (!course) return;
     fetch(`http://localhost:8000/courses/${course.id}/assignments`, {
@@ -72,7 +63,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
       .finally(() => setLoading(false));
   }, [course.id]);
 
-  /* -------------------------- helpers ----------------------------- */
   const update = (idx: number, field: RowEditable, val: string) =>
     setRows((r) => {
       const copy = [...r];
@@ -154,9 +144,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
     setScenarioResult(data.needed_mark);
   };
 
-  /* ------------------------------------------------------------------ */
-  /*  render                                                            */
-  /* ------------------------------------------------------------------ */
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-lg">
@@ -171,7 +158,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
           <p className="text-center py-6">Loading…</p>
         ) : (
           <>
-            {/* table header */}
             <div className="grid grid-cols-[1fr_90px_90px_32px] gap-2 px-1 py-2 text-xs font-medium text-muted-foreground border-b">
               <span>Name</span>
               <span className="text-center">Mark %</span>
@@ -179,7 +165,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
               <span />
             </div>
 
-            {/* rows */}
             <div className="max-h-[55vh] overflow-y-auto space-y-2 py-2 pr-1">
               {rows.map((row, i) => (
                 <div
@@ -217,7 +202,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
               ))}
             </div>
 
-            {/* actions */}
             <div className="mt-4 space-y-2">
               <Button variant="outline" onClick={addRow} className="w-full">
                 + Add Assessment
@@ -242,9 +226,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
                 </p>
               )}
 
-              {/* ---------------------------------------------------------- */}
-              {/*  scenario calculator                                       */}
-              {/* ---------------------------------------------------------- */}
               <Card className="mt-6">
                 <CardHeader>
                   <CardTitle className="text-lg">What do I need?</CardTitle>
@@ -252,7 +233,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
 
                 <CardContent className="grid gap-4">
                   <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
-                    {/* assignment selector */}
                     <div className="grid gap-2">
                       <Label htmlFor="assignment">Assignment</Label>
                       <Select
@@ -278,7 +258,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
                       </Select>
                     </div>
 
-                    {/* target input */}
                     <div className="grid gap-2">
                       <Label htmlFor="target">Target %</Label>
                       <Input
@@ -292,8 +271,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
                         onChange={(e) => setScenarioTarget(e.target.value)}
                       />
                     </div>
-
-                    {/* action button */}
                     <Button
                       className="w-full md:w-auto md:mt-6"
                       onClick={calculateScenario}

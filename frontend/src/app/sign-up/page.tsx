@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/card";
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState(""); // set default to ""
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -33,7 +33,7 @@ export default function SignUpPage() {
 
       if (!res.ok) {
         const err = await res.json();
-        alert(err.detail || "Signup failed"); // get rid of alert later
+        alert(err.detail || "Signup failed");
         return;
       }
 
@@ -47,7 +47,7 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignUp = () => {
-    window.location.href = "temp"; // sets browers url
+    window.location.href = "temp";
   };
 
   return (

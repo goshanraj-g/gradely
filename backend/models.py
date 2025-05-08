@@ -32,5 +32,4 @@ class Assignment(Base):
     mark = Column(Float, nullable=False)
     weight = Column(Float, nullable=False)
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
-
     course = relationship("Course", back_populates="assignments")

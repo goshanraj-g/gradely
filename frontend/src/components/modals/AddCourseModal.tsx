@@ -22,7 +22,6 @@ export default function AddCourseModal({ onCourseAdded }: Props) {
 
   const nameRef = useRef<HTMLInputElement>(null);
 
-  // autofocus when opened
   useEffect(() => {
     if (open) {
       setError("");

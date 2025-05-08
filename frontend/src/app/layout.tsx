@@ -1,4 +1,11 @@
-// app/layout.tsx
+export const metadata = {
+  title: "TermCalc",
+  icons: {
+    icon: "/favicon.png",
+  },
+};
+
+
 import "./globals.css";
 import NavBar from "@/components/layout/NavBar";
 

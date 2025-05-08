@@ -23,7 +23,6 @@ export default function CoursesPage() {
   const [active, setActive] = useState<Course | null>(null);
   const [toDelete, setToDelete] = useState<Course | null>(null);
 
-  /* load courses on mount */
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -48,7 +47,6 @@ export default function CoursesPage() {
     }
   };
 
-  /* delete handler */
   const confirmDelete = async () => {
     if (!toDelete) return;
     const token = localStorage.getItem("token") || "";
@@ -94,10 +92,9 @@ export default function CoursesPage() {
               onClick={() => setActive(c)}
               className="relative group cursor-pointer"
             >
-              {/* trash icon */}
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // don’t open modal
+                  e.stopPropagation();
                   setToDelete(c);
                 }}
                 className="absolute top-2 right-2 p-1 rounded-full
@@ -121,7 +118,6 @@ export default function CoursesPage() {
         </div>
       )}
 
-      {/* modal for assessments */}
       {active && (
         <AssessmentsModal course={active} onClose={() => setActive(null)} />
       )}

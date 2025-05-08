@@ -30,7 +30,7 @@ def add_assignments(
     db: Session = Depends(get_db),
     current=Depends(get_current_user),
 ):
-    course_owned(course_id, db, current.id)  # 404 if not owner
+    course_owned(course_id, db, current.id)
     ass = models.Assignment(course_id=course_id, **payload.dict())
     db.add(ass)
     db.commit()
@@ -45,7 +45,6 @@ def delete_assignment(
     db: Session = Depends(get_db),
     current=Depends(get_current_user),
 ):
-    # make sure the course really belongs to the user
     course_owned(course_id, db, current.id)
 
     assignment = (
@@ -58,7 +57,6 @@ def delete_assignment(
 
     db.delete(assignment)
     db.commit()
-    # 204s have no body, so just return a bare Response
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

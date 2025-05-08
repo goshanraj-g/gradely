@@ -10,14 +10,12 @@ from schemas import CourseCreate
 import models
 import os
 
-
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
 
 router = APIRouter()
 
 
-# connect to database
 def get_db():
     db = SessionLocal()
     try:
@@ -42,9 +40,7 @@ def create_course(
     course: CourseCreate,
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
-):  # expects a JSON body with a name, and code, and is parsed and validated with Pydantic with CourseCreate schema
-    # injects SQLAlchemy db session to query or update the db
-    # injects currently authenticated user
+):
     new_course = models.Course(
         name=course.name, code=course.code, owner_id=current_user.id
     )
@@ -65,13 +61,8 @@ def delete_course(
         .filter(models.Course.id == course_id, models.Course.owner_id == current.id)
         .first()
     )
-
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
-
     db.delete(course)
     db.commit()
     return
-
-
-# recieves course request from client, verifies the user

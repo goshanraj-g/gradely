@@ -16,7 +16,7 @@ app = FastAPI(
     title="TermCalc API",
     description="Backend for TermCalc - grade tracking and calculator",
     version="1.0.0",
-)  # create backend
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,11 +27,11 @@ app.add_middleware(
 )
 
 
-@app.get("/")  # when someone vistis home page, return this:
+@app.get("/")
 def home():
     return {"message": "TermCalc backend is running!"}
 
 
-app.include_router(auth_router)  # take all routes from auth.py and add them to the app
+app.include_router(auth_router)
 app.include_router(courses_router)
 app.include_router(assignments_router)

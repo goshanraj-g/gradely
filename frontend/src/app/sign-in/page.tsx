@@ -1,4 +1,4 @@
-"use client"; // all components run on browser
+"use client";
 
 import Link from "next/link";
 import { Input } from "@/components/ui/input";

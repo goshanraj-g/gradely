@@ -40,7 +40,6 @@ export default function QuickStartModal() {
       const m = parseFloat(mark);
       let w = parseFloat(weight);
       if (isNaN(m) || isNaN(w)) return;
-      if (w > 1) w /= 100; // allow “25” → 0.25
       total += m * w;
       sum += w;
     });
@@ -50,12 +49,14 @@ export default function QuickStartModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="cursor-pointer bg-indigo-600">Do a quick calculation</Button>
+        <Button className="cursor-pointer bg-indigo-600">
+          Do a quick calculation
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Quick grade calculator</DialogTitle>
+          <DialogTitle>Quick Grade Calculator</DialogTitle>
         </DialogHeader>
 
         <div className="grid grid-cols-[1fr_90px_90px_32px] py-2 text-xs font-medium text-muted-foreground border-b">
