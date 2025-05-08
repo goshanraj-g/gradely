@@ -1,140 +1,104 @@
-# GradeTracker ("TermCalc")
+# 🎯 Gradely
 
-A full-stack web application for tracking university course grades, simulating grading scenarios, and replacing traditional spreadsheets with an interactive, goal-focused dashboard.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![React Version](https://img.shields.io/badge/React-%5E18.0-61DAFB.svg)](https://reactjs.org/)
+[![FastAPI Version](https://img.shields.io/badge/FastAPI-%5E0.110-009688.svg)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-336791.svg)](https://www.postgresql.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Styling-TailwindCSS-38B2AC.svg)](https://tailwindcss.com/)
 
----
-
-## 🧠 Overview
-
-GradeTracker is built for students who want a clean, structured way to monitor and forecast their academic performance. Whether you're aiming for a certain GPA or just trying to avoid surprises, this app makes it simple to manage your coursework.
-
----
-
-## ✅ Core Features (MVP)
-
-### 📘 Course Creation
-
-* Add multiple courses with term start/end dates.
-
-### 📝 Assessment Input
-
-* Add assignments, exams, quizzes, and labs with custom weights.
-* Input current grades or leave blank for future items.
-
-### 📊 Live Grade Breakdown
-
-* Calculates current grade based on completed work.
-* Displays visualizations like pie charts and progress bars.
-
-### 🎯 Goal Simulation
-
-* Set a target grade and see what's needed to reach it.
-
-### 🔮 Scenario Testing
-
-* Input hypothetical grades to simulate outcomes.
-* View insights on max/min achievable performance.
-
-### 💾 Data Persistence
-
-* Data stored locally (LocalStorage) by default.
-* Optional: cloud sync using AWS (S3 or DynamoDB).
+<p align="center">
+  <img src="frontend/public/logo.png" alt="Gradely Logo" width="120"/>
+</p>
 
 ---
 
-## 🚀 Stretch Features
+## About the Project
 
-* Export course summaries or semester reports as PDF/CSV
-* Calendar integration for assignment due dates
-* GPA calculator based on completed courses
-* Email/SMS reminders (via AWS SES/SNS)
-* Offline/mobile support with PWA
+**Gradely** is a full-stack web application that replaces spreadsheets with an interactive, student-friendly dashboard for tracking grades, forecasting final outcomes, and testing academic scenarios.
+
+Built by a student, for students, it's a smarter way to stay in control of your academic goals.
 
 ---
 
-## 🧠 Advanced Feature Idea: Course Outline Parser
+## Key Features
 
-### 📄 Problem
+### Core Features (MVP)
+- 📘 **Course Creation**: Add multiple courses with term info
+- 📝 **Assessment Input**: Log assignments, quizzes, exams, and labs with custom weights
+- 📊 **Live Grade Breakdown**: Dynamic grade calculation based on completed work
+- 🎯 **Goal Simulation**: Set a target grade and get insight into what you need to reach it
+- 🔮 **Scenario Testing**: Simulate what-if grades for individual assessments
 
-Entering assessment weights manually from course syllabi is tedious.
-
-### 💡 Solution
-
-Upload a screenshot or PDF of the syllabus, and the app:
-
-* Uses AWS Textract/Comprehend to extract structured text
-* Parses tables/lists for assessment titles, weights, and due dates
-* Pre-fills the assessment form for user confirmation
+### Stretch Goals
+- 📆 **Calendar Integration** for assignment due dates
+- ☁️ **Cloud Hosting** via AWS (S3, Lambda, RDS, etc.)
+- 🧠 **Syllabus OCR Parser** using AWS Textract to auto-fill assessments
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Frontend:** React + TailwindCSS + shadcn
-* **State Management:** Context API
-* **Charts:** Chart.js or Recharts
-* **Backend:** Python (FastAPI)
-* **Storage (MVP):** PostgreSQL (local for dev, optional AWS RDS for prod)
-* **Cloud (Optional):** AWS S3, DynamoDB, Lambda, Cognito, SES/SNS
-* **OCR/Parsing:** AWS Textract or Python Tesseract
+### Frontend
+- **React.js** (v18+)
+- **TailwindCSS**
+- **ShadCN**
+
+### Backend
+- **Python** with **FastAPI**
+- **PostgreSQL** 
+- **Auth**: JWT-based, with OAuth2 support planned
+
+### Parsing / AI (Planned)
+- **OCR**: AWS Textract / Python Tesseract
+- **Parsing**: Regex + ML for syllabus extraction
 
 ---
 
-## 🗃️ Database Schema Proposal (MVP)
+## 🧪 Feature Flow Example: Scenario Calculator
 
-### Users (optional)
-
-* `id` (UUID)
-* `email` (string)
-* `created_at` (timestamp)
-
-### Courses
-
-* `id` (UUID)
-* `user_id` (UUID, foreign key)
-* `course_name` (string)
-* `course_code` (string)
-* `term` (string)
-* `target_grade` (float)
-
-### Assessments
-
-* `id` (UUID)
-* `course_id` (UUID, foreign key)
-* `title` (string)
-* `type` (enum: assignment, quiz, exam, lab, etc.)
-* `due_date` (date)
-* `weight` (float)
-* `grade_received` (float, nullable)
+Let’s say you’ve completed 70% of your course with an average of 85%, and you're aiming for a 90% final grade.
+Gradely shows you exactly what mark you need on your remaining evaluations to reach your goal,
+no spreadsheets, no guesswork, just clean visuals and accurate math.
 
 ---
 
-## 🚢 Deployment Plan
+## 🏠 Home Screen Preview
 
-* Host frontend via S3 + CloudFront
-* API backend with FastAPI on Lambda or EC2
-* Optional: GitHub Actions for CI/CD
-
----
-
-## 🎓 Why This Matters
-
-* Provides clarity and control over academic performance
-* Practical tool with real-world value
-* Demonstrates full-stack skills across frontend, backend, cloud, and even document parsing/AI
+<p align="center">
+  <img src="frontend/public/homescreen.png" alt="Home Screen Preview" width="600"/>
+</p>
 
 ---
 
-## 🔧 Next Steps
+## 🧮 Calculator Demo
 
-1. Build frontend UI using `shadcn`
-2. Implement grade logic and simulations in FastAPI
-3. Store data with PostgreSQL (locally first)
-4. Test course outline parsing with AWS Textract
-5. Package and deploy to AWS
+<p align="center">
+  <img src="frontend/public/calculator-demo.png" alt="Calculator Demo" width="600"/>
+</p>
 
 ---
 
-## 👨‍🎓 Target Audience
+## 🚀 How to Run (Dev)
 
-STEM students (and others) who want something smarter than Excel, lighter than an LMS, and fully in their control.
+### Prerequisites
+- Node.js + npm
+- Python 3.11+
+- PostgreSQL
+
+### Setup
+
+```bash
+git clone https://github.com/your-username/gradetracker.git
+cd gradetracker
+
+# Backend
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --reload
+
+# Frontend
+cd ../frontend
+npm install
+npm run dev
