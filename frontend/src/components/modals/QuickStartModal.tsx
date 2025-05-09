@@ -115,14 +115,14 @@ export default function QuickStartModal() {
                 <Input
                   type="number"
                   value={r.mark}
-                  placeholder="78"
+                  placeholder="e.g. 78"
                   className="text-center"
                   onChange={(e) => update(i, "mark", e.target.value)}
                 />
                 <Input
                   type="number"
                   value={r.weight}
-                  placeholder="0.25"
+                  placeholder="e.g. 0.25"
                   className="text-center"
                   onChange={(e) => update(i, "weight", e.target.value)}
                 />
