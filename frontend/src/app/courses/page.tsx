@@ -23,14 +23,14 @@ export default function CoursesPage() {
   const [active, setActive] = useState<Course | null>(null);
   const [toDelete, setToDelete] = useState<Course | null>(null);
 
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     router.push("/sign-in");
-  //     return;
-  //   }
-  //   fetchCourses(token);
-  // }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      router.push("/sign-in");
+      return;
+    }
+    fetchCourses(token);
+  }, []);
 
   const fetchCourses = async (token: string) => {
     setLoading(true);
