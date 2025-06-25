@@ -31,8 +31,6 @@ Built by a student, for students, it's a smarter way to stay in control of your 
 
 ### Stretch Goals
 - 📆 **Calendar Integration** for assignment due dates
-- ☁️ **Cloud Hosting** via AWS (S3, Lambda, RDS, etc.)
-- 🧠 **Syllabus OCR Parser** using AWS Textract to auto-fill assessments
 
 ---
 
