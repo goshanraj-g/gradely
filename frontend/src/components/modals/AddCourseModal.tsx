@@ -34,12 +34,12 @@ export default function AddCourseModal({ onCourseAdded }: Props) {
     setLoading(true);
     setError("");
 
-    const token = localStorage.getItem("token") || "";
-    if (!token) {
-      setError("You must be logged in.");
-      setLoading(false);
-      return;
-    }
+    // const token = localStorage.getItem("token") || "";
+    // if (!token) {
+    //   setError("You must be logged in.");
+    //   setLoading(false);
+    //   return;
+    // }
 
     try {
       const res = await fetch("http://localhost:8000/courses", {
