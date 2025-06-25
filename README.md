@@ -29,11 +29,6 @@ Built by a student, for students, it's a smarter way to stay in control of your 
 - 🎯 **Goal Simulation**: Set a target grade and get insight into what you need to reach it
 - 🔮 **Scenario Testing**: Simulate what-if grades for individual assessments
 
-### Stretch Goals
-- 📆 **Calendar Integration** for assignment due dates
-
----
-
 ## 🛠️ Tech Stack
 
 ### Frontend
@@ -45,11 +40,7 @@ Built by a student, for students, it's a smarter way to stay in control of your 
 - **Python** with **FastAPI**
 - **PostgreSQL** 
 - **Auth**: JWT-based, with OAuth2 support planned
-
-### Parsing / AI (Planned)
-- **OCR**: AWS Textract / Python Tesseract
-- **Parsing**: Regex + ML for syllabus extraction
-
+- 
 ---
 
 ## 🧪 Feature Flow Example: Scenario Calculator
