@@ -39,7 +39,7 @@ export default function SignInPage() {
 
       const data = await res.json();
       localStorage.setItem("token", data.access_token);
-      console.log("loged in ");
+      console.log("logged in ");
 
       window.location.href = "/courses";
     } catch (error) {

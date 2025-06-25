@@ -4,10 +4,9 @@ export const metadata = {
     icon: "/favicon.png",
   },
 };
-
-
 import "./globals.css";
 import NavBar from "@/components/layout/NavBar";
+import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
   children,
@@ -18,7 +17,10 @@ export default function RootLayout({
     <html lang="en">
       <body className="flex flex-col h-screen">
         <NavBar />
-        <main className="flex-1 overflow-auto">{children}</main>
+        <main className="flex-1 overflow-auto">
+          {children}
+          <Toaster />
+        </main>
       </body>
     </html>
   );

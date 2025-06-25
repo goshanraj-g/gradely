@@ -321,7 +321,6 @@ export default function AssessmentsModal({ course, onClose }: Props) {
                       <span className="font-semibold">
                         {rows.find((r) => r.id === scenarioAssignmentId)?.name}
                       </span>
-                      .
                     </p>
                   )}
                 </CardContent>
