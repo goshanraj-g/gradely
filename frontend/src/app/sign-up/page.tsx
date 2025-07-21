@@ -105,14 +105,6 @@ export default function SignUpPage() {
             or
           </div>
 
-          <Button
-            variant="outline"
-            className="w-full cursor-pointer"
-            onClick={handleGoogleSignUp}
-          >
-            Sign In with Google
-          </Button>
-
           <p className="mt-4 text-sm text-center">
             Already have an account?{" "}
             <Link
