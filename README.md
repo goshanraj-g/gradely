@@ -1,4 +1,4 @@
-# 🎯 Gradely
+# 🎯 Gradely 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![React Version](https://img.shields.io/badge/React-%5E18.0-61DAFB.svg)](https://reactjs.org/)
@@ -18,6 +18,7 @@
 
 Built by a student, for students, it's a smarter way to stay in control of your academic goals.
 
+Available @ https://gradely-chi.vercel.app/
 ---
 
 ## Key Features
@@ -77,7 +78,7 @@ no spreadsheets, no guesswork, just clean visuals and accurate math.
 ### Setup
 
 ```bash
-git clone https://github.com/your-username/gradetracker.git
+git clone https://github.com/your-username/gradely.git
 cd gradetracker
 
 # Backend
