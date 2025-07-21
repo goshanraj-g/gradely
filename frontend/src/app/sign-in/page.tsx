@@ -24,7 +24,7 @@ export default function SignInPage() {
     body.append("password", password);
 
     try {
-      const res = await fetch("http://localhost:8000/login", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",

@@ -42,7 +42,7 @@ export default function AddCourseModal({ onCourseAdded }: Props) {
     }
 
     try {
-      const res = await fetch("http://localhost:8000/courses", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

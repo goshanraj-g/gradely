@@ -35,7 +35,7 @@ export default function CoursesPage() {
   const fetchCourses = async (token: string) => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/courses", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch courses");
@@ -51,7 +51,7 @@ export default function CoursesPage() {
     if (!toDelete) return;
     const token = localStorage.getItem("token") || "";
 
-    const res = await fetch(`http://localhost:8000/courses/${toDelete.id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/courses/${toDelete.id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

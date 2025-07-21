@@ -46,9 +46,12 @@ export default function AssessmentsModal({ course, onClose }: Props) {
 
   useEffect(() => {
     if (!course) return;
-    fetch(`http://localhost:8000/courses/${course.id}/assignments`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
       .then((r) => r.json())
       .then((data) =>
         setRows(
@@ -77,7 +80,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
     if (!row.name || !row.mark || !row.weight || row.id) return;
 
     const res = await fetch(
-      `http://localhost:8000/courses/${course.id}/assignments`,
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments`,
       {
         method: "POST",
         headers: {
@@ -103,7 +106,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
     const row = rows[idx];
     if (row.id) {
       await fetch(
-        `http://localhost:8000/courses/${course.id}/assignments/${row.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments/${row.id}`,
         {
           method: "DELETE",
           headers: { Authorization: `Bearer ${token}` },
@@ -117,7 +120,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
     if (!row.id) return;
 
     const res = await fetch(
-      `http://localhost:8000/courses/${course.id}/assignments/${row.id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments/${row.id}`,
       {
         method: "PUT",
         headers: {
@@ -157,7 +160,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
     if (isNaN(t)) return alert("Enter a valid target %");
 
     const res = await fetch(
-      `http://localhost:8000/courses/${course.id}/assignments/${scenarioAssignmentId}/scenario?target=${t}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments/${scenarioAssignmentId}/scenario?target=${t}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
     if (!res.ok) {
