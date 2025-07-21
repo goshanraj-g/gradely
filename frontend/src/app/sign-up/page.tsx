@@ -45,11 +45,6 @@ export default function SignUpPage() {
       console.error(error);
     }
   };
-
-  const handleGoogleSignUp = () => {
-    window.location.href = "temp";
-  };
-
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-6 pt-20">
       <Card className="w-full max-w-sm">
