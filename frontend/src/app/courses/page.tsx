@@ -30,7 +30,7 @@ export default function CoursesPage() {
       return;
     }
     fetchCourses(token);
-  }, []);
+  }, [router]);
 
   const fetchCourses = async (token: string) => {
     setLoading(true);

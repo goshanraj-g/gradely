@@ -44,8 +44,16 @@ export default function AssessmentsModal({ course, onClose }: Props) {
   const [scenarioTarget, setScenarioTarget] = useState("");
   const [scenarioResult, setScenarioResult] = useState<number | null>(null);
 
+  type Assignment = {
+    id: number;
+    name: string;
+    mark: number;
+    weight: number;
+  };
+
   useEffect(() => {
-    if (!course) return;
+    if (!course || !token) return;
+
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments`,
       {
@@ -53,9 +61,9 @@ export default function AssessmentsModal({ course, onClose }: Props) {
       }
     )
       .then((r) => r.json())
-      .then((data) =>
+      .then((data: Assignment[]) =>
         setRows(
-          data.map((a: any) => ({
+          data.map((a) => ({
             id: a.id,
             name: a.name,
             mark: String(a.mark),
@@ -64,7 +72,7 @@ export default function AssessmentsModal({ course, onClose }: Props) {
         )
       )
       .finally(() => setLoading(false));
-  }, [course.id]);
+  }, [course, token]);
 
   const update = (idx: number, field: RowEditable, val: string) =>
     setRows((r) => {
