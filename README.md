@@ -18,7 +18,6 @@
 
 Built by a student, for students, it's a smarter way to stay in control of your academic goals.
 
-Available @ https://gradely-chi.vercel.app/
 ---
 
 ## Key Features
