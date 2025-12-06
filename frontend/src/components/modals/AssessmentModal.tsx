@@ -3,155 +3,55 @@
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
-import { Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
-
-type Course = { id: number; name: string; code: string };
-type RowEditable = "name" | "mark" | "weight";
-type Row = { id?: number; name: string; mark: string; weight: string };
+import { Trash2, ArrowRight, Plus, Target } from "lucide-react";
+import { useState } from "react";
+import { nanoid } from "nanoid";
+import type { Course, Assignment } from "@/app/page";
 
 type Props = {
   course: Course;
   onClose: () => void;
+  onUpdate: (course: Course) => void;
 };
 
-export default function AssessmentsModal({ course, onClose }: Props) {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : "";
+export default function AssessmentsModal({ course, onClose, onUpdate }: Props) {
+  const [assignments, setAssignments] = useState<Assignment[]>(course.assignments);
 
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const [result, setResult] = useState<number | null>(null);
-
-  const [scenarioAssignmentId, setScenarioAssignmentId] = useState<number | "">(
-    ""
-  );
+  // Scenario state
   const [scenarioTarget, setScenarioTarget] = useState("");
+  const [scenarioAssignmentId, setScenarioAssignmentId] = useState<string>("");
   const [scenarioResult, setScenarioResult] = useState<number | null>(null);
 
-  type Assignment = {
-    id: number;
-    name: string;
-    mark: number;
-    weight: number;
+  const updateAssignments = (newAssignments: Assignment[]) => {
+    setAssignments(newAssignments);
+    onUpdate({ ...course, assignments: newAssignments });
   };
 
-  useEffect(() => {
-    if (!course || !token) return;
-
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
-    )
-      .then((r) => r.json())
-      .then((data: Assignment[]) =>
-        setRows(
-          data.map((a) => ({
-            id: a.id,
-            name: a.name,
-            mark: String(a.mark),
-            weight: String(a.weight),
-          }))
-        )
-      )
-      .finally(() => setLoading(false));
-  }, [course, token]);
-
-  const update = (idx: number, field: RowEditable, val: string) =>
-    setRows((r) => {
-      const copy = [...r];
-      copy[idx] = { ...copy[idx], [field]: val };
-      return copy;
-    });
-
-  const addRow = () =>
-    setRows((r) => [...r, { name: "", mark: "", weight: "" }]);
-
-  const saveRow = async (idx: number, row: Row) => {
-    if (!row.name || !row.mark || !row.weight || row.id) return;
-
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: row.name,
-          mark: parseFloat(row.mark),
-          weight: parseFloat(row.weight),
-        }),
-      }
-    );
-    const data = await res.json();
-    setRows((r) => {
-      const copy = [...r];
-      copy[idx] = { ...row, id: data.id };
-      return copy;
-    });
+  const update = (idx: number, field: keyof Assignment, val: string) => {
+    const copy = [...assignments];
+    copy[idx] = { ...copy[idx], [field]: val };
+    updateAssignments(copy);
   };
 
-  const deleteRow = async (idx: number) => {
-    const row = rows[idx];
-    if (row.id) {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments/${row.id}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-    }
-    setRows((r) => r.filter((_, i) => i !== idx));
+  const addRow = () => {
+    updateAssignments([
+      ...assignments,
+      { id: nanoid(), name: "", mark: "", weight: "" },
+    ]);
   };
 
-  const updateRow = async (idx: number, row: Row) => {
-    if (!row.id) return;
-
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments/${row.id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: row.name,
-          mark: parseFloat(row.mark),
-          weight: parseFloat(row.weight),
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      console.error("Update failed", await res.text());
-    }
+  const deleteRow = (idx: number) => {
+    updateAssignments(assignments.filter((_, i) => i !== idx));
   };
 
-  const calc = () => {
+  const calculateGrade = () => {
     let total = 0;
     let sumW = 0;
-    rows.forEach((r) => {
+    assignments.forEach((r) => {
       const m = parseFloat(r.mark);
       const w = parseFloat(r.weight);
       if (!isNaN(m) && !isNaN(w)) {
@@ -159,186 +59,184 @@ export default function AssessmentsModal({ course, onClose }: Props) {
         sumW += w;
       }
     });
-    setResult(sumW ? total / sumW : null);
+    return sumW ? total / sumW : null;
   };
 
-  const calculateScenario = async () => {
-    if (!scenarioAssignmentId || !scenarioTarget) return;
-    const t = parseFloat(scenarioTarget);
-    if (isNaN(t)) return alert("Enter a valid target %");
+  const currentGrade = calculateGrade();
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/courses/${course.id}/assignments/${scenarioAssignmentId}/scenario?target=${t}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    if (!res.ok) {
-      const err = await res.text();
-      return alert("Error: " + err);
-    }
-    const data = await res.json();
-    setScenarioResult(data.needed_mark);
+  const calculateScenario = () => {
+    if (!scenarioAssignmentId || !scenarioTarget) return;
+    const target = parseFloat(scenarioTarget);
+    if (isNaN(target)) return;
+
+    const assignment = assignments.find((a) => a.id === scenarioAssignmentId);
+    if (!assignment) return;
+
+    const totalWeight = assignments.reduce((sum, a) => {
+      const w = parseFloat(a.weight);
+      return sum + (isNaN(w) ? 0 : w);
+    }, 0);
+
+    const currentSum = assignments.reduce((sum, a) => {
+      if (a.id === scenarioAssignmentId) return sum;
+      const m = parseFloat(a.mark);
+      const w = parseFloat(a.weight);
+      if (isNaN(m) || isNaN(w)) return sum;
+      return sum + m * w;
+    }, 0);
+
+    const assignmentWeight = parseFloat(assignment.weight);
+    if (isNaN(assignmentWeight) || assignmentWeight === 0) return;
+
+    const needed = (target * totalWeight - currentSum) / assignmentWeight;
+    setScenarioResult(Math.round(needed * 100) / 100);
   };
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>
-            {course.name}{" "}
-            <span className="text-muted-foreground">[{course.code}]</span>
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-6xl w-[95vw] p-0 gap-0 overflow-hidden rounded-3xl bg-white flex flex-col max-h-[90vh]">
+        <VisuallyHidden>
+          <DialogTitle>{course.name} - Assessments</DialogTitle>
+        </VisuallyHidden>
 
-        {loading ? (
-          <p className="text-center py-6">Loading…</p>
-        ) : (
-          <>
-            <div className="grid grid-cols-[1fr_90px_90px_32px] gap-2 px-1 py-2 text-xs font-medium text-muted-foreground border-b">
-              <span>Name</span>
-              <span className="text-center">Mark %</span>
-              <span className="text-center">Weight</span>
-              <span />
+        {/* Header */}
+        <div className="p-8 border-b bg-gray-50/50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold font-heading">{course.name}</h2>
+            <p className="text-muted-foreground font-mono text-sm">{course.code}</p>
+          </div>
+          <div className="text-left sm:text-right w-full sm:w-auto bg-white sm:bg-transparent p-3 sm:p-0 rounded-xl border sm:border-0">
+            <div className="text-xs text-muted-foreground font-bold uppercase tracking-wider mb-1">Current Grade</div>
+            <div className={`text-3xl md:text-4xl font-extrabold ${currentGrade !== null && currentGrade >= 50 ? 'text-black' : 'text-red-500'}`}>
+              {currentGrade !== null ? currentGrade.toFixed(2) : "—"}%
             </div>
+          </div>
+        </div>
 
-            <div className="max-h-[55vh] overflow-y-auto space-y-2 py-2 pr-1">
-              {rows.map((row, i) => (
-                <div
-                  key={i}
-                  className="grid grid-cols-[1fr_90px_90px_32px] gap-2 items-center"
-                >
-                  <Input
+        <div className="flex-1 overflow-y-auto p-8">
+          {/* List Header */}
+          <div className="grid grid-cols-[1fr_70px_70px_32px] md:grid-cols-[1fr_100px_100px_40px] gap-3 md:gap-4 mb-3 px-2 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            <div>Assessment</div>
+            <div className="text-center">Mark (%)</div>
+            <div className="text-center">Weight</div>
+            <div></div>
+          </div>
+
+          {/* Assignments List */}
+          <div className="space-y-2">
+            {assignments.map((row, i) => (
+              <div key={row.id} className="group flex items-center gap-3 md:gap-4 p-2 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-100">
+                <div className="flex-1 min-w-0">
+                  <input
+                    className="w-full bg-transparent font-medium focus:outline-none placeholder:text-gray-300 text-sm md:text-base"
+                    placeholder="Assessment Name"
                     value={row.name}
-                    placeholder="Assignment"
                     onChange={(e) => update(i, "name", e.target.value)}
-                    onBlur={() =>
-                      row.id ? updateRow(i, row) : saveRow(i, row)
-                    }
                   />
-                  <Input
+                </div>
+                <div className="w-[70px] md:w-[100px]">
+                  <input
+                    className="w-full bg-transparent text-center font-mono focus:outline-none placeholder:text-gray-300 text-sm md:text-base"
+                    placeholder="—"
+                    type="number"
                     value={row.mark}
-                    placeholder="e.g. 78"
-                    className="text-center"
                     onChange={(e) => update(i, "mark", e.target.value)}
-                    onBlur={() =>
-                      row.id ? updateRow(i, row) : saveRow(i, row)
-                    }
                   />
-                  <Input
+                </div>
+                <div className="w-[70px] md:w-[100px]">
+                  <input
+                    className="w-full bg-transparent text-center font-mono focus:outline-none placeholder:text-gray-300 text-sm md:text-base"
+                    placeholder="—"
+                    type="number"
+                    step="0.01"
                     value={row.weight}
-                    placeholder="e.g. 0.25"
-                    className="text-center"
                     onChange={(e) => update(i, "weight", e.target.value)}
-                    onBlur={() =>
-                      row.id ? updateRow(i, row) : saveRow(i, row)
-                    }
                   />
+                </div>
+                <div className="w-[32px] md:w-[40px] flex justify-end">
                   <button
                     onClick={() => deleteRow(i)}
-                    className="text-muted-foreground hover:text-destructive"
-                    aria-label="Remove"
+                    className="text-gray-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all hover:scale-110 active:scale-90"
                   >
                     <Trash2 size={16} />
                   </button>
                 </div>
-              ))}
+              </div>
+            ))}
+
+            <button
+              onClick={addRow}
+              className="w-full py-4 border-2 border-dashed border-gray-200 rounded-xl text-sm font-medium text-gray-400 hover:text-black hover:border-black transition-all flex items-center justify-center gap-2 mt-4 hover:scale-[1.01] active:scale-[0.99]"
+            >
+              <Plus size={18} /> Add Assessment
+            </button>
+          </div>
+        </div>
+
+        {/* Footer / Scenario Tool */}
+        <div className="bg-gray-50 p-8 border-t">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+              <Target size={18} />
             </div>
+            <h3 className="font-bold text-sm uppercase tracking-wider text-gray-900">Scenario Calculator</h3>
+          </div>
 
-            <div className="mt-4 space-y-2">
-              <Button variant="outline" onClick={addRow} className="w-full">
-                + Add Assessment
-              </Button>
-              <Button
-                onClick={calc}
-                className="w-full bg-indigo-600 hover:bg-indigo-700"
-              >
-                Calculate Weighted Grade
-              </Button>
+          <div className="flex flex-col lg:flex-row gap-4 items-end">
+            <div className="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-bold text-gray-500 mb-1.5 block uppercase tracking-wide">If I want a final grade of:</label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    placeholder="e.g. 90"
+                    className="w-full h-12 pl-4 pr-8 rounded-xl border border-gray-200 focus:border-black focus:ring-0 text-lg font-medium bg-white shadow-sm transition-all"
+                    value={scenarioTarget}
+                    onChange={(e) => setScenarioTarget(e.target.value)}
+                  />
+                  <span className="absolute right-4 top-3.5 text-gray-400 font-medium">%</span>
+                </div>
+              </div>
 
-              {result !== null && (
-                <p className="text-center pt-1">
-                  Weighted grade:
-                  <span
-                    className={`font-semibold ml-1 ${
-                      result >= 50 ? "text-green-600" : "text-red-600"
-                    }`}
+              <div>
+                <label className="text-xs font-bold text-gray-500 mb-1.5 block uppercase tracking-wide">By getting a mark on:</label>
+                <div className="relative">
+                  <select
+                    className="w-full h-12 px-4 rounded-xl border border-gray-200 focus:border-black focus:ring-0 text-base bg-white shadow-sm appearance-none transition-all cursor-pointer"
+                    value={scenarioAssignmentId}
+                    onChange={(e) => setScenarioAssignmentId(e.target.value)}
                   >
-                    {result.toFixed(2)}%
-                  </span>
-                </p>
-              )}
-
-              <Card className="mt-6">
-                <CardHeader>
-                  <CardTitle className="text-lg">What do I need?</CardTitle>
-                </CardHeader>
-
-                <CardContent className="grid gap-4">
-                  <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_auto] gap-4 items-end">
-                    <div className="grid gap-2">
-                      <Label htmlFor="assignment">Assignment</Label>
-                      <Select
-                        value={scenarioAssignmentId?.toString() ?? ""}
-                        onValueChange={(val) =>
-                          setScenarioAssignmentId(
-                            val === "" ? "" : parseInt(val)
-                          )
-                        }
-                      >
-                        <SelectTrigger id="assignment">
-                          <SelectValue placeholder="Select assignment…" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {rows
-                            .filter((r) => r.id)
-                            .map((r) => (
-                              <SelectItem key={r.id} value={r.id!.toString()}>
-                                {r.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="grid gap-2">
-                      <Label htmlFor="target">Target %</Label>
-                      <Input
-                        id="target"
-                        type="number"
-                        min={0}
-                        max={100}
-                        step={0.1}
-                        placeholder="e.g. 90"
-                        value={scenarioTarget}
-                        onChange={(e) => setScenarioTarget(e.target.value)}
-                      />
-                    </div>
-                    <Button
-                      className="w-full md:w-auto md:mt-6 cursor-pointer"
-                      onClick={calculateScenario}
-                    >
-                      Calculate
-                    </Button>
+                    <option value="" disabled>Select an assessment...</option>
+                    {assignments.filter(a => a.name).map(a => (
+                      <option key={a.id} value={a.id}>{a.name}</option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-4 pointer-events-none text-gray-400">
+                    <ArrowRight size={16} className="rotate-90" />
                   </div>
-
-                  {scenarioResult !== null && (
-                    <p className="text-center text-sm md:text-base">
-                      To finish the course at{" "}
-                      <span className="font-semibold">{scenarioTarget}%</span>,
-                      you need{" "}
-                      <span className="font-semibold">
-                        {scenarioResult.toFixed(2)}%
-                      </span>{" "}
-                      on{" "}
-                      <span className="font-semibold">
-                        {rows.find((r) => r.id === scenarioAssignmentId)?.name}
-                      </span>
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
-          </>
-        )}
+
+            <Button
+              onClick={calculateScenario}
+              className="bg-black hover:bg-gray-800 text-white h-12 px-8 rounded-xl font-medium text-base w-full lg:w-auto shadow-lg shadow-gray-200 transition-all hover:scale-105 active:scale-95"
+            >
+              Calculate
+            </Button>
+          </div>
+
+          {scenarioResult !== null && (
+            <div className="mt-6 p-4 bg-indigo-50 text-indigo-900 rounded-xl text-base flex items-center gap-3 border border-indigo-100 animate-in slide-in-from-bottom-2">
+              <div className="w-8 h-8 bg-indigo-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <ArrowRight size={16} className="text-indigo-700" />
+              </div>
+              <span>
+                You need to score <span className="font-bold text-xl mx-1">{scenarioResult.toFixed(2)}%</span> on that assessment.
+              </span>
+            </div>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   );
